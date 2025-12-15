@@ -24,3 +24,15 @@ export {
   createQueueProcessor,
   type QueueProcessorConfig,
 } from './queue-processor.js';
+
+// Payout Service
+export {
+  PayoutService,
+  createPayoutService,
+  PayoutError,
+  PayoutErrorCode,
+  type PayoutRequest,
+  type TransferFilters,
+  type BatchPayoutItem,
+  type BatchPayoutResult,
+} from './payout-service.js';

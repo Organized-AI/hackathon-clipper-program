@@ -62,6 +62,8 @@ npm run dev help
 │   └── index.ts          # CLI entry point
 ├── tests/                # Test suite
 │   └── integration.test.ts
+├── docs/                 # Documentation
+│   └── WHOP-API-ENDPOINTS.md
 ├── PLANNING/             # Implementation phases
 │   └── implementation-phases/
 └── vitest.config.ts      # Test configuration
@@ -240,5 +242,6 @@ Uses `@whop/sdk` with these endpoint groups:
 ## Key Documentation
 
 - [Implementation Master Plan](PLANNING/IMPLEMENTATION-MASTER-PLAN.md)
+- [Whop API Endpoints Reference](docs/WHOP-API-ENDPOINTS.md) - Complete 107 endpoint reference
 - [Whop API Docs](https://docs.whop.com/apps)
 - [Whop MCP SDK](https://github.com/whopio/whop-mcp)

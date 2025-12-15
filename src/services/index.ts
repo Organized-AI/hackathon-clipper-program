@@ -36,3 +36,15 @@ export {
   type BatchPayoutItem,
   type BatchPayoutResult,
 } from './payout-service.js';
+
+// Community Service
+export {
+  CommunityService,
+  createCommunityService,
+  type CourseContent,
+  type ChapterContent,
+  type LessonContent,
+  type PostOptions,
+  type ListPostsOptions,
+  type NotificationContent,
+} from './community-service.js';

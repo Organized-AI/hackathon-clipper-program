@@ -30,3 +30,15 @@ export {
   totalPaidCommand,
   batchPayoutCommand,
 } from './payout-cli.js';
+
+// Community CLI commands
+export {
+  createOnboardingCommand,
+  createCourseCommand,
+  listCoursesCommand,
+  postAnnouncementCommand,
+  createPostCommand,
+  listPostsCommand,
+  sendNotificationCommand,
+  sendBulkNotificationCommand,
+} from './community-cli.js';

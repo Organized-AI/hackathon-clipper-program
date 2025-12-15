@@ -3,13 +3,18 @@
   "version": "0.1.0",
   "description": "Whop-powered clipper program management for hackathon events",
   "main": "dist/index.js",
+  "bin": {
+    "clipper": "./dist/index.js"
+  },
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
     "lint": "eslint src/",
-    "test": "vitest"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@whop/sdk": "^0.0.19",

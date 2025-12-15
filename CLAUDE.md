@@ -28,77 +28,217 @@ npm run dev help
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 0 | Project Setup | ⏳ |
-| 1 | Core Infrastructure | ⏳ |
-| 2 | Campaign Management | ⏳ |
-| 3 | Submission Workflow | ⏳ |
-| 4 | Payout System | ⏳ |
-| 5 | Community Features | ⏳ |
-| 6 | Integration & Testing | ⏳ |
+| 0 | Project Setup | ✅ |
+| 1 | Core Infrastructure | ✅ |
+| 2 | Campaign Management | ✅ |
+| 3 | Submission Workflow | ✅ |
+| 4 | Payout System | ✅ |
+| 5 | Community Features | ✅ |
+| 6 | Integration & Testing | ✅ |
 
 ## Project Structure
 
 ```
-├── .claude/              # Claude Code configuration
-│   └── agents/           # Agent definitions
-├── PLANNING/             # Implementation phases
-│   ├── IMPLEMENTATION-MASTER-PLAN.md
-│   └── implementation-phases/
-│       ├── PHASE-0-PROMPT.md
-│       ├── PHASE-1-PROMPT.md
-│       └── ...
 ├── src/
 │   ├── lib/              # Core utilities
+│   │   ├── config.ts     # Zod-validated configuration
+│   │   ├── logger.ts     # Structured logging
+│   │   └── whop-client.ts # API client wrapper
 │   ├── services/         # Business logic
+│   │   ├── campaign-service.ts
+│   │   ├── submission-service.ts
+│   │   ├── payout-service.ts
+│   │   ├── community-service.ts
+│   │   └── queue-processor.ts
+│   ├── cli/              # CLI command handlers
+│   │   ├── campaign-cli.ts
+│   │   ├── submission-cli.ts
+│   │   ├── payout-cli.ts
+│   │   └── community-cli.ts
 │   ├── types/            # Type definitions
+│   │   └── clipper.ts    # Clipper-specific types
+│   ├── webhooks/         # Webhook handlers
+│   │   └── handler.ts
 │   └── index.ts          # CLI entry point
-└── CLAUDE-CODE-PHASE-0.md  # Quick start
+├── tests/                # Test suite
+│   └── integration.test.ts
+├── PLANNING/             # Implementation phases
+│   └── implementation-phases/
+└── vitest.config.ts      # Test configuration
 ```
 
-## How to Build
-
-### Using Claude Code
+## CLI Usage
 
 ```bash
-cd /Users/supabowl/Library/Mobile\ Documents/com~apple~CloudDocs/BHT\ Promo\ iCloud/Organized\ AI/Windsurf/hackathon-clipper-program
-claude --dangerously-skip-permissions
+# Show help
+npm run dev help
 
-# Then in Claude Code:
-"Read PLANNING/implementation-phases/PHASE-0-PROMPT.md and execute all tasks"
+# Test API connection
+npm run dev test-connection
 ```
 
-### Phase-by-Phase
+### Campaign Commands
 
-Each phase prompt contains:
-- Complete code to implement
-- Success criteria to verify
-- Completion template to create
-- Git commit message
+```bash
+# Create a campaign
+npm run dev campaign:create "Summer Clips" "Summer clipper promotion"
 
-## Whop API Integration
+# List all campaigns
+npm run dev campaign:list --all
 
-Uses `@whop/mcp` SDK with these endpoint groups:
+# Get campaign details
+npm run dev campaign:get prod_xxx
 
-| Category | Endpoints |
-|----------|-----------|
-| Products | create, retrieve, update, list |
-| Plans | create, update, list |
-| Entries | list, retrieve, approve, deny |
-| Transfers | create, retrieve, list |
-| Courses | create courses, chapters, lessons |
-| Forums | create posts, list posts |
-| Notifications | create |
+# Update campaign
+npm run dev campaign:update prod_xxx --name "New Name"
+
+# Create pricing plan
+npm run dev plan:create prod_xxx "Basic Plan" 9.99
+
+# Create promo code
+npm run dev promo:create prod_xxx SUMMER50 --percentOff 50
+```
+
+### Submission Commands
+
+```bash
+# List pending submissions
+npm run dev submissions:pending exp_xxx
+
+# List all submissions
+npm run dev submissions:list --status approved
+
+# Approve submission
+npm run dev submissions:approve ent_xxx --viewCount 50000
+
+# Reject submission
+npm run dev submissions:reject ent_xxx "Content violates guidelines"
+
+# Get statistics
+npm run dev submissions:stats exp_xxx
+
+# Bulk review (auto-approve)
+npm run dev submissions:bulk-review exp_xxx --hours 48 --minViews 1000
+```
+
+### Payout Commands
+
+```bash
+# Check balance
+npm run dev payout:balance
+
+# Send payout
+npm run dev payout:send user_xxx 25.00 --note "Summer bonus"
+
+# List payouts
+npm run dev payout:list --recipient user_xxx
+
+# Get transfer status
+npm run dev payout:status txn_xxx
+
+# Get payout summary
+npm run dev payout:summary --days 30
+
+# Get total paid
+npm run dev payout:total --recipient user_xxx
+```
+
+### Community Commands
+
+```bash
+# Create onboarding course
+npm run dev community:onboarding exp_xxx
+
+# Create custom course
+npm run dev community:course exp_xxx "Advanced Editing"
+
+# List courses
+npm run dev community:courses exp_xxx
+
+# Post announcement
+npm run dev community:announce feed_xxx "Important Update" --content "Details here..."
+
+# Send notification
+npm run dev community:notify exp_xxx "New Feature!" --body "Check out..."
+```
 
 ## Environment Variables
 
 ```env
-WHOP_API_KEY=your_api_key       # Required
-WHOP_WEBHOOK_SECRET=webhook_key # Optional
-WHOP_APP_ID=app_xxx             # Optional
+# Required
+WHOP_API_KEY=your_api_key_here
+
+# Optional
+WHOP_WEBHOOK_SECRET=your_webhook_secret
+WHOP_APP_ID=app_xxxxxxxxxxxxxx
+NODE_ENV=development
+LOG_LEVEL=debug
+
+# Clipper Settings (optional, has defaults)
+DEFAULT_CPM_RATE=5.00
+MIN_PAYOUT_THRESHOLD=1.00
+MAX_PAYOUT_CAP=500.00
+AUTO_APPROVE_HOURS=48
 ```
+
+## Payout Calculation
+
+```
+CPM Payout = (views / 1000) × cpm_rate
+Total = CPM Payout + flat_fee + bonus_payout
+Final = min(Total, max_cap)
+
+Only paid if Final >= min_threshold
+```
+
+**Example:**
+- Views: 50,000
+- CPM Rate: $5.00
+- Flat Fee: $0
+- Payout: (50000 / 1000) × 5 = $250.00
+
+## Testing
+
+```bash
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run with coverage
+npm run test:coverage
+```
+
+## Webhook Integration
+
+The webhook handler supports:
+- `entry.created` - New submission received
+- `entry.approved` - Submission approved
+- `entry.denied` - Submission rejected
+- `transfer.created` - Payout initiated
+- `transfer.completed` - Payout successful
+- `transfer.failed` - Payout failed
+- `membership.created` - New clipper joined
+- `membership.deleted` - Clipper left
+
+## Whop API Integration
+
+Uses `@whop/sdk` with these endpoint groups:
+
+| Category | Endpoints |
+|----------|-----------|
+| Products | create, retrieve, update, list, delete |
+| Plans | create, retrieve, update, list |
+| Entries | list, retrieve, approve, deny |
+| Transfers | create, retrieve, list |
+| Ledger | retrieve accounts |
+| Courses | create courses, chapters, lessons |
+| Forums | create posts, list posts |
+| Notifications | create |
 
 ## Key Documentation
 
 - [Implementation Master Plan](PLANNING/IMPLEMENTATION-MASTER-PLAN.md)
-- [Phase 0: Project Setup](PLANNING/implementation-phases/PHASE-0-PROMPT.md)
 - [Whop API Docs](https://docs.whop.com/apps)
+- [Whop MCP SDK](https://github.com/whopio/whop-mcp)
